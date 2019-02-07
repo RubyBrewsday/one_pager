@@ -56,7 +56,7 @@ class App
     c.action do |global_options,options,args|
       filename = "#{args[0].downcase.gsub(" ", "_")}.md"
       template = if File.exists?(".one-pager/config.json")
-                   JSON.read(".one-pager/config.json")["template"]
+                   JSON.parse(File.read(".one-pager/config.json"))["template"]
                  elsif options[:template]
                    options[:template]
                  else

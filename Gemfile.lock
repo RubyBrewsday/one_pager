@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    one_pager (0.0.2)
+    one_pager (0.0.4)
       gli (= 2.18.0)
       tilt (= 2.0.9)
 
