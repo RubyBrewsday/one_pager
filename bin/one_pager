@@ -4,7 +4,8 @@ require 'one_pager'
 
 DEFAULT_CONFIGURATION_TEMPLATE =<<-TEMPLATE
 {
-  "template": "standard"
+  "template": "standard",
+  "timestamp_prefix": true
 }
 TEMPLATE
 
@@ -54,9 +55,11 @@ class App
     c.flag [:op, :output_path]
 
     c.action do |global_options,options,args|
-      filename = "#{args[0].downcase.gsub(" ", "_")}.md"
+      configuration = JSON.parse(File.read(".one-pager/config.json"))
+      prefix = configuration["timestamp_prefix"] ? "#{Time.now.to_i}_" : ""
+      filename = "#{prefix}#{args[0].downcase.gsub(" ", "_")}.md"
       template = if File.exists?(".one-pager/config.json")
-                   JSON.parse(File.read(".one-pager/config.json"))["template"]
+                   configuration["template"]
                  elsif options[:template]
                    options[:template]
                  else

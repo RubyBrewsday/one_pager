@@ -1,3 +1,4 @@
 {
-  "template": "standard"
+  "template": "standard",
+  "timestamp_prefix": true
 }
