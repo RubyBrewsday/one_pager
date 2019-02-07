@@ -1,0 +1,5 @@
+= one_pager
+
+Generate this with
+    one_pager _doc
+After you have described your command line interface

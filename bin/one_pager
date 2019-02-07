@@ -1,0 +1,115 @@
+#!/usr/bin/env ruby
+require 'gli'
+require 'one_pager'
+
+DEFAULT_CONFIGURATION_TEMPLATE =<<-TEMPLATE
+{
+  "template": "standard"
+}
+TEMPLATE
+
+class App
+  extend GLI::App
+
+  program_desc 'Describe your application here'
+
+  version OnePager::VERSION
+
+  subcommand_option_handling :normal
+  arguments :strict
+
+  desc 'Describe some switch here'
+  switch [:s,:switch]
+
+  desc 'Describe some flag here'
+  default_value 'the default'
+  arg_name 'The name of the argument'
+  flag [:f,:flagname]
+
+  desc 'Describe init here'
+  arg_name 'Describe arguments to init here'
+  command :init do |c|
+    c.desc 'Describe a switch to init'
+    c.switch :s
+
+    c.desc 'Describe a flag to init'
+    c.default_value 'default'
+    c.flag :f
+    c.action do |global_options,options,args|
+
+      system 'mkdir', '-p', 'docs/one-pagers'
+
+      File.open('.one-pager/config.json', 'w') { |file| file.write(DEFAULT_CONFIGURATION_TEMPLATE) }
+
+      puts "One Pagers Directory and Configuration created!"
+    end
+  end
+
+  desc 'Describe add here'
+  arg_name 'Describe arguments to add here'
+  command :add do |c|
+
+    c.flag [:od, :output_dir]
+    c.flag [:op, :output_path]
+
+    c.action do |global_options,options,args|
+      filename = "#{args[0].downcase.gsub(" ", "_")}.md"
+      template = if File.exists?(".one-pager.json")
+                   JSON.read(".one-pager.json")["template"]
+                 elsif options[:template]
+                   options[:template]
+                 else
+                  "standard"
+                 end
+      markdown_contents = OnePager::Generator.genrate_one_pager(template, args[0])
+      output_path = if options[:output_path]
+                      options[:output_path]
+                    elsif options[:output_dir]
+                      system 'mkdir', '-p', "docs/one-pagers/#{options[:output_dir]}"
+                      "docs/one-pagers/#{options[:output_dir]}/#{filename}"
+                    else
+                      "docs/one-pagers/#{filename}"
+                    end
+      File.open(output_path, "w") { |file| file.write(markdown_contents)}
+    end
+  end
+
+  desc 'Describe display here'
+  arg_name 'Describe arguments to display here'
+  command :display do |c|
+    c.action do |global_options,options,args|
+      puts "display command ran"
+    end
+  end
+
+  desc 'Describe remove here'
+  arg_name 'Describe arguments to remove here'
+  command :remove do |c|
+    c.action do |global_options,options,args|
+      puts "remove command ran"
+    end
+  end
+
+  pre do |global,command,options,args|
+    # Pre logic here
+    # Return true to proceed; false to abort and not call the
+    # chosen command
+    # Use skips_pre before a command to skip this block
+    # on that command only
+    true
+  end
+
+  post do |global,command,options,args|
+    # Post logic here
+    # Use skips_post before a command to skip this
+    # block on that command only
+  end
+
+  on_error do |exception|
+    # Error logic here
+    # return false to skip default error handling
+    true
+  end
+end
+
+exit App.run(ARGV)
