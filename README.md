@@ -1,4 +1,5 @@
 # OnePager
+[![Maintainability](https://api.codeclimate.com/v1/badges/e7fdf4ae08946a712268/maintainability)](https://codeclimate.com/github/RubyBrewsday/one_pager/maintainability)
 
 Because everyone likes to write business proposals via the terminal.
 
